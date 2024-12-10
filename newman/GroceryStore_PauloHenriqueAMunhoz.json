@@ -1,0 +1,2119 @@
+{
+	"info": {
+		"_postman_id": "8cc10f3b-08bd-4875-9c40-cbb1f2ba3f74",
+		"name": "GroceryStore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38730613"
+	},
+	"item": [
+		{
+			"name": "HomePage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code message OK\", () => {\r",
+							"    pm.response.to.have.status(\"OK\")\r",
+							"})\r",
+							"\r",
+							"pm.test(\"JSON type\", () => {\r",
+							"    pm.expect(json.message).to.be.a('string');    \r",
+							"})\r",
+							"\r",
+							"pm.test(\"Welcome message\", function () {\r",
+							"    pm.expect(json.message).to.eql(\"Simple Grocery Store API.\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time was less than 500ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code message OK\", () => {\r",
+							"    pm.response.to.have.status(\"OK\")\r",
+							"})\r",
+							"\r",
+							"pm.test(\"JSON type\", () => {\r",
+							"    pm.expect(json.status).to.be.a('string');    \r",
+							"})\r",
+							"\r",
+							"pm.test(\"API available\", function () {\r",
+							"    pm.expect(json.status).to.eql(\"UP\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/status",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json();\r",
+							"\r",
+							"if (json.length > 0) {\r",
+							"    let productID = json[0];\r",
+							"    let productAuxID = json[1];\r",
+							"    pm.collectionVariables.set('ProductID',productID.id)\r",
+							"    pm.collectionVariables.set('ProductAuxID',productAuxID.id)\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code message OK\", () => {\r",
+							"    pm.response.to.be.ok;\r",
+							"})\r",
+							"\r",
+							"let count = 0;\r",
+							"\r",
+							"json.forEach( product => {count++})\r",
+							"pm.collectionVariables.set(\"totalProducts\",count);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/products",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Products Parameter",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"productsLimit\",20)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status Code 200\", ()=>{\r",
+							"    pm.response.to.have.status(200);\r",
+							"})\r",
+							"\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Limit was expected\", () => {\r",
+							"    let limit = pm.collectionVariables.get(\"productsLimit\");\r",
+							"    let totalProducts = pm.collectionVariables.get(\"totalProducts\");\r",
+							"    if (limit >= totalProducts) {\r",
+							"        limit = totalProducts;\r",
+							"    }\r",
+							"\r",
+							"    pm.expect(json.length).equal(limit);\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/products?results={{productsLimit}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "results",
+							"value": "{{productsLimit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Products OverLimit",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"productsLimit\",21)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Overlimit was detected\", () => {\r",
+							"    pm.response.to.have.status(400);\r",
+							"    pm.response.to.be.badRequest;\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/products?results={{productsLimit}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "results",
+							"value": "{{productsLimit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Category",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json();\r",
+							"let category = pm.collectionVariables.get('category')\r",
+							"\r",
+							"let matchingFilter = json.filter(product => product.category === category)\r",
+							"\r",
+							"pm.test(\"Status Code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message OK\", () => {\r",
+							"    pm.response.to.be.ok;\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Category was displayed\", () => {\r",
+							"    pm.expect(matchingFilter.length).to.be.greaterThan(0)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/products?category={{category}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "{{category}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Single Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"let Product = pm.collectionVariables.get('ProductID')\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message OK\", () => {\r",
+							"    pm.response.to.be.ok;\r",
+							"})\r",
+							"\r",
+							"pm.test('Retrieved product', () => {\r",
+							"    pm.expect(json.id).to.equal(Product)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Data types\", () => {\r",
+							"     pm.expect(json.id).to.be.a('number');\r",
+							"     pm.expect(json.category).to.be.string;\r",
+							"     pm.expect(json.name).to.be.string;\r",
+							"     pm.expect(json.manufacturer).to.be.string;\r",
+							"     pm.expect(json.price).to.be.a('number')\r",
+							"     pm.expect(json['current-stock']).to.be.a('number')\r",
+							"     pm.expect(json.inStock).to.be.a('boolean')\r",
+							"})\r",
+							"\r",
+							"pm.test('Product on stock', () => {\r",
+							"    if (json.inStock) {\r",
+							"        pm.expect(json['current-stock']).to.be.greaterThan(0)\r",
+							"    }\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/products/:productId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"products",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "{{ProductID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "No Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status was 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"    pm.response.to.have.status('Not Found')\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/products/:productId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"products",
+						":productId"
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "9999"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Single Product Label",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"let product = pm.collectionVariables.get('ProductID')\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message OK\", () => {\r",
+							"    pm.response.to.be.ok;\r",
+							"})\r",
+							"\r",
+							"pm.test('Retrieved the correct product', () => {\r",
+							"    pm.expect(json.id).to.equal(product)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Check correct data types\", () => {\r",
+							"     pm.expect(json.id).to.be.a('number');\r",
+							"     pm.expect(json.category).to.be.string;\r",
+							"     pm.expect(json.name).to.be.string;\r",
+							"     pm.expect(json.manufacturer).to.be.string;\r",
+							"     pm.expect(json.price).to.be.a('number')\r",
+							"     pm.expect(json['current-stock']).to.be.a('number')\r",
+							"     pm.expect(json.inStock).to.be.a('boolean')\r",
+							"     pm.expect(json['product-label']).to.be.a('string')\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Product label is PDF type\", () => {\r",
+							"    pm.expect(json['product-label']).to.contains('file/pdf')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/products/:productId?product-label=true",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"products",
+						":productId"
+					],
+					"query": [
+						{
+							"key": "product-label",
+							"value": "true"
+						}
+					],
+					"variable": [
+						{
+							"key": "productId",
+							"value": "{{ProductID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"json = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status code 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message was created\", () => {\r",
+							"    pm.response.to.have.status('Created')\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Cart was created\", () => {\r",
+							"    pm.expect(json.created).to.be.true;\r",
+							"    pm.expect(json.cartId).to.be.not.empty;\r",
+							"})\r",
+							"\r",
+							"let cartId = json.cartId;\r",
+							"pm.collectionVariables.set('cartID',cartId)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message OK\", () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Cart was created\", () => {\r",
+							"    pm.expect(json.created).to.be.string;\r",
+							"    pm.expect(json.items).to.be.empty;\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartid"
+					],
+					"variable": [
+						{
+							"key": "cartid",
+							"value": "{{cartID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cart Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message OK\", () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})\r",
+							"\r",
+							"let count = 0;\r",
+							"json.forEach( product => {count++})\r",
+							"pm.collectionVariables.set(\"productsinCart\",count);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartid/items",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartid",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "cartid",
+							"value": "{{cartID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Item on Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.collectionVariables.set('itemID',json.itemId)\r",
+							"\r",
+							"pm.test(\"Status code 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test('Status code was created', () => {\r",
+							"    pm.response.to.have.status('Created')\r",
+							"})\r",
+							"\r",
+							"pm.test('Created is true', () => {\r",
+							"    pm.expect(json.created).to.be.true;\r",
+							"})\r",
+							"\r",
+							"pm.collectionVariables.set('itemQuantity',1)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productId\": {{ProductID}},\r\n    \"quantity\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartId/items",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartId",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cart's Item that has some item",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message OK\", () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})\r",
+							"\r",
+							"let count = 0;\r",
+							"json.forEach( product => {count++})\r",
+							"let productsCart = pm.collectionVariables.get('productsinCart')\r",
+							"\r",
+							"pm.test('Product was added', () => {\r",
+							"    pm.expect(count).to.be.not.equals(productsCart)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartid/items",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartid",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "cartid",
+							"value": "{{cartID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update the items quantity of cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status of message\", () => {\r",
+							"    pm.response.to.have.status('No Content')\r",
+							"})\r",
+							"\r",
+							"pm.collectionVariables.set('itemQuantity',2)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"quantity\" : 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartId",
+						"items",
+						":itemId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartID}}"
+						},
+						{
+							"key": "itemId",
+							"value": "{{itemID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Items of cart with quantity changed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message OK\", () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})\r",
+							"\r",
+							"\r",
+							"pm.test('Quantity was added', () => {\r",
+							"    pm.expect(json[0].quantity).to.be.greaterThan(1)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartid/items",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartid",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "cartid",
+							"value": "{{cartID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Replace items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message\", () => {\r",
+							"    pm.response.to.have.status('No Content')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productId\" : {{ProductAuxID}},\r\n    \"quantity\" : 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartId",
+						"items",
+						":itemId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartID}}"
+						},
+						{
+							"key": "itemId",
+							"value": "{{itemID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Items of shift cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"let ProductID = pm.collectionVariables.get('ProductID')\r",
+							"let ProductAux = pm.collectionVariables.get('ProductAuxID')\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message OK\", () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})\r",
+							"\r",
+							"pm.test('Product was replaced', () => {\r",
+							"    pm.expect(json[0].productId).to.be.not.equals(ProductID)\r",
+							"    pm.expect(json[0].productId).to.be.equals(ProductAux)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartid/items",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartid",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "cartid",
+							"value": "{{cartID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Item from cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message\", () => {\r",
+							"    pm.response.to.have.status('No Content')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartId",
+						"items",
+						":itemId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartID}}"
+						},
+						{
+							"key": "itemId",
+							"value": "{{itemID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Items of removed cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status code 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message OK\", () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Cart was void\", () => {\r",
+							"    pm.expect(json).to.be.empty\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartid/items",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartid",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "cartid",
+							"value": "{{cartID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new cart's order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"json = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Status code 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message was created\", () => {\r",
+							"    pm.response.to.have.status('Created')\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Cart was created\", () => {\r",
+							"    pm.expect(json.created).to.be.true;\r",
+							"    pm.expect(json.cartId).to.be.not.empty;\r",
+							"})\r",
+							"\r",
+							"let cartId = json.cartId;\r",
+							"pm.collectionVariables.set('cartID',cartId)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/carts",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Item on cart's order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.collectionVariables.set('itemID',json.itemId)\r",
+							"\r",
+							"pm.test(\"Status code 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test('Status code was created', () => {\r",
+							"    pm.response.to.have.status('Created')\r",
+							"})\r",
+							"\r",
+							"pm.test('Created was true', () => {\r",
+							"    pm.expect(json.created).to.be.true;\r",
+							"})\r",
+							"\r",
+							"pm.collectionVariables.set('itemQuantity',1)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productId\": {{ProductID}},\r\n    \"quantity\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartId/items",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartId",
+						"items"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update quantity of cart's order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message\", () => {\r",
+							"    pm.response.to.have.status('No Content')\r",
+							"})\r",
+							"\r",
+							"pm.collectionVariables.set('itemQuantity',2)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"quantity\" : 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartId",
+						"items",
+						":itemId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartID}}"
+						},
+						{
+							"key": "itemId",
+							"value": "{{itemID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Replace on cart's order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status message\", () => {\r",
+							"    pm.response.to.have.status('No Content')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productId\" : {{ProductAuxID}},\r\n    \"quantity\" : 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/carts/:cartId/items/:itemId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"carts",
+						":cartId",
+						"items",
+						":itemId"
+					],
+					"variable": [
+						{
+							"key": "cartId",
+							"value": "{{cartID}}"
+						},
+						{
+							"key": "itemId",
+							"value": "{{itemID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "API token",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let custname = pm.variables.replaceIn('{{$randomFullName}}')\r",
+							"pm.collectionVariables.set(\"customerName\",custname)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"if (json != null) {\r",
+							"    let token = json.accessToken;\r",
+							"    pm.collectionVariables.set(\"accessToken\", token)\r",
+							"}\r",
+							"\r",
+							"pm.test('Response code 201', () => {\r",
+							"    pm.response.to.have.status(201)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message was created', () => {\r",
+							"    pm.response.to.be.status('Created')\r",
+							"})\r",
+							"\r",
+							"pm.test('Token was a string', () => {\r",
+							"    if (json != null) {\r",
+							"        pm.expect(json.accessToken).to.be.string;\r",
+							"    }\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"clientName\": \"{{customerName}}\",\r\n   \"clientEmail\": \"{{$randomEmail}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api-clients",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api-clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json();\r",
+							"let count = 0;\r",
+							"\r",
+							"pm.test('Status code 200', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message was OK', () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})\r",
+							"\r",
+							"if (json.length > 0){\r",
+							"    json.forEach( order => {count++})\r",
+							"}\r",
+							"\r",
+							"pm.collectionVariables.set('totalOrders',count)\r",
+							"\r",
+							"pm.test('Orders are available', () => {\r",
+							"    pm.expect(count).to.be.equals(0)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Order",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let comment = pm.variables.replaceIn('{{$randomLoremSentence}}')\r",
+							"pm.collectionVariables.set(\"orderComment\", comment)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.test('Status code 201', () => {\r",
+							"    pm.response.to.have.status(201)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status was created', () => {\r",
+							"    pm.response.to.have.status('Created')\r",
+							"})\r",
+							"\r",
+							"pm.test('Created was True', () => {\r",
+							"    pm.expect(json.created).to.be.true;\r",
+							"})\r",
+							"\r",
+							"pm.test('Retrive order id', () => {\r",
+							"    if (json.orderId) {\r",
+							"        let orderId = json.orderId;\r",
+							"        pm.collectionVariables.set('orderID',orderId);\r",
+							"        pm.expect(json.orderId).to.be.string;\r",
+							"    }\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cartId\": \"{{cartID}}\",\r\n    \"customerName\": \"{{customerName}}\",\r\n    \"comment\": \"{{orderComment}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "One Order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json();\r",
+							"let orderID = pm.collectionVariables.get('orderID')\r",
+							"\r",
+							"pm.test('Status code 200', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message was OK', () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})\r",
+							"\r",
+							"pm.test('Order Id was on list', () => {\r",
+							"    pm.expect(json.id).to.be.equals(orderID)\r",
+							"})\r",
+							"\r",
+							"let itemID = pm.collectionVariables.get('itemID')\r",
+							"let productID = pm.collectionVariables.get('ProductAuxID')\r",
+							"let quantity = pm.collectionVariables.get('itemQuantity')\r",
+							"let jsonItems = json.items[0]\r",
+							"\r",
+							"pm.test('Order metadata', () => {\r",
+							"    pm.expect(json.id).to.equal(orderID)\r",
+							"    pm.expect(jsonItems.id).to.equal(itemID)\r",
+							"    pm.expect(jsonItems.productId).to.be.equals(productID)\r",
+							"    pm.expect(jsonItems.quantity).to.be.equals(quantity)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders/:orderId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"let orderID = pm.collectionVariables.get('orderID')\r",
+							"let count = 0\r",
+							"let matchingOrders = json.filter(order => order.id === orderID)\r",
+							"\r",
+							"\r",
+							"pm.test('Status code 200', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message was Ok', () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})\r",
+							"\r",
+							"if (json.length > 0){\r",
+							"    json.forEach( order => {count++})\r",
+							"}\r",
+							"\r",
+							"pm.collectionVariables.set('totalOrders',count)\r",
+							"\r",
+							"pm.test('Order was created', () => {\r",
+							"    pm.expect(count).to.be.greaterThan(0)\r",
+							"})\r",
+							"\r",
+							"pm.test('Order Id on list', () => {\r",
+							"    pm.expect(matchingOrders.length).to.be.greaterThan(0)\r",
+							"})\r",
+							"\r",
+							"let matchingorder = matchingOrders[0]\r",
+							"let matchingitems = matchingorder.items[0]\r",
+							"let itemID = pm.collectionVariables.get('itemID')\r",
+							"let productID = pm.collectionVariables.get('ProductAuxID')\r",
+							"\r",
+							"pm.test('Order metadata', () => {\r",
+							"    pm.expect(matchingorder.id).to.equal(orderID)\r",
+							"    pm.expect(matchingitems.id).to.equal(itemID)\r",
+							"    pm.expect(matchingitems.productId).to.be.equals(productID)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alter Customer order's name - Invalid Scenario",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code 400', () => {\r",
+							"    pm.response.to.have.status(400)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerName\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/:orderId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alter Customer order's name",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let customername = pm.variables.replaceIn('{{$randomFullName}}')\r",
+							"pm.collectionVariables.set(\"customerName\",customername)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code 204', () => {\r",
+							"    pm.response.to.have.status(204)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message', () => {\r",
+							"    pm.response.to.have.status('No Content')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerName\": \"{{customerName}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/:orderId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer's name changed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"let orderID = pm.collectionVariables.get('orderID')\r",
+							"let customer = pm.collectionVariables.get('customerName')\r",
+							"\r",
+							"pm.test('Order Id was correct', () => {\r",
+							"    pm.expect(json.id).equals(orderID)\r",
+							"})\r",
+							"\r",
+							"pm.test('Customers name was changed', () => {\r",
+							"    pm.expect(json.customerName).equals(customer)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status code 200', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message', () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders/:orderId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alter order's comment",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let comment = pm.variables.replaceIn('{{$randomLoremSentence}}')\r",
+							"pm.collectionVariables.set(\"orderComment\",comment)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code 204', () => {\r",
+							"    pm.response.to.have.status(204)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message', () => {\r",
+							"    pm.response.to.have.status('No Content')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"comment\": \"{{orderComment}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/orders/:orderId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order's comment changed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"let orderID = pm.collectionVariables.get('orderID')\r",
+							"let comment = pm.collectionVariables.get('orderComment')\r",
+							"\r",
+							"pm.test('Order Id was correct', () => {\r",
+							"    pm.expect(json.id).equals(orderID)\r",
+							"})\r",
+							"\r",
+							"pm.test('Order comment was changed', () => {\r",
+							"    pm.expect(json.comment).equals(comment)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status code 200', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message', () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders/:orderId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Erase order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code 204', () => {\r",
+							"    pm.response.to.have.status(204)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message', () => {\r",
+							"    pm.response.to.have.status('No Content')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders/:orderId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{orderID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Erase order that is no longer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"let orderId = pm.collectionVariables.get('orderID')\r",
+							"\r",
+							"let matchingOrders = json.filter(order => order.id === orderId)\r",
+							"\r",
+							"pm.test('Removed order that is no longer listed', () => {\r",
+							"    pm.expect(matchingOrders.length).to.not.be.greaterThan(0)\r",
+							"\r",
+							"})\r",
+							"\r",
+							"pm.test('Status code 200', () => {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})\r",
+							"\r",
+							"pm.test('Status message Ok', () => {\r",
+							"    pm.response.to.have.status('OK')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Erase order  that cant be retrived",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let json = pm.response.json()\r",
+							"\r",
+							"pm.test('Status code 404', () => {\r",
+							"    pm.response.to.have.status(404)\r",
+							"})\r",
+							"\r",
+							"pm.test('Error property was returned', function() {\r",
+							"    pm.expect(json.error).to.be.a('string')\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/orders/:orderid",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"orders",
+						":orderid"
+					],
+					"variable": [
+						{
+							"key": "orderid",
+							"value": "{{orderID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://simple-grocery-store-api.glitch.me",
+			"type": "string"
+		},
+		{
+			"key": "category",
+			"value": "coffee",
+			"type": "string"
+		},
+		{
+			"key": "totalOrders",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ProductID",
+			"value": ""
+		},
+		{
+			"key": "ProductAuxID",
+			"value": ""
+		},
+		{
+			"key": "totalProducts",
+			"value": ""
+		},
+		{
+			"key": "productsLimit",
+			"value": ""
+		},
+		{
+			"key": "cartID",
+			"value": ""
+		},
+		{
+			"key": "productsinCart",
+			"value": ""
+		},
+		{
+			"key": "itemID",
+			"value": ""
+		},
+		{
+			"key": "itemQuantity",
+			"value": ""
+		},
+		{
+			"key": "customerName",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "orderComment",
+			"value": ""
+		},
+		{
+			"key": "orderID",
+			"value": ""
+		}
+	]
+}
